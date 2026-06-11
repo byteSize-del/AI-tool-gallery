@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import {
   fetchModels,
-  sendChat,
+  streamChat,
   ChatError,
   type ApiProvider,
   type Capability,
@@ -143,18 +145,30 @@ export default function Playground() {
     if (!selected || !text.trim() || sending) return;
     setChatError(null);
     const userMsg: ChatMsg = { role: "user", content: text.trim() };
-    const next = [...messages, userMsg];
-    setMessages(next);
+    const history = [...messages, userMsg];
+    // add the user message + an empty assistant placeholder to stream into
+    setMessages([...history, { role: "assistant", content: "" }]);
     setInput("");
     setSending(true);
     try {
-      const reply = await sendChat({
-        provider: selected.providerId,
-        model: selected.id,
-        messages: next,
-        accessCode: accessCode || undefined,
-      });
-      setMessages((m) => [...m, { role: "assistant", content: reply }]);
+      await streamChat(
+        {
+          provider: selected.providerId,
+          model: selected.id,
+          messages: history,
+          accessCode: accessCode || undefined,
+        },
+        (token) => {
+          setMessages((cur) => {
+            const copy = cur.slice();
+            const last = copy[copy.length - 1];
+            if (last && last.role === "assistant") {
+              copy[copy.length - 1] = { ...last, content: last.content + token };
+            }
+            return copy;
+          });
+        }
+      );
       setAccessNeeded(false);
     } catch (e) {
       if (e instanceof ChatError && e.code === "ACCESS_REQUIRED") {
@@ -163,7 +177,7 @@ export default function Playground() {
       } else {
         setChatError(e instanceof Error ? e.message : "Something went wrong.");
       }
-      // roll back the user message so they can retry cleanly
+      // roll back the user message + placeholder so they can retry cleanly
       setMessages(messages);
       setInput(text);
     } finally {
@@ -301,24 +315,39 @@ export default function Playground() {
                     </div>
                   </div>
                 ) : (
-                  messages.map((m, i) => (
-                    <div key={i} className={`pg-msg pg-msg--${m.role}`}>
-                      <span className="pg-msg__who">
-                        {m.role === "user" ? "🧑 You" : "🤖 " + (selected?.providerLabel ?? "AI")}
-                      </span>
-                      <div className="pg-msg__bubble">{m.content}</div>
-                    </div>
-                  ))
-                )}
-                {sending && (
-                  <div className="pg-msg pg-msg--assistant">
-                    <span className="pg-msg__who">🤖 thinking…</span>
-                    <div className="pg-msg__bubble pg-msg__bubble--typing">
-                      <span></span>
-                      <span></span>
-                      <span></span>
-                    </div>
-                  </div>
+                  messages.map((m, i) => {
+                    const isLast = i === messages.length - 1;
+                    const streamingThis = sending && isLast && m.role === "assistant";
+                    return (
+                      <div key={i} className={`pg-msg pg-msg--${m.role}`}>
+                        <span className="pg-msg__who">
+                          {m.role === "user"
+                            ? "🧑 You"
+                            : "🤖 " + (selected?.providerLabel ?? "AI")}
+                        </span>
+                        <div className="pg-msg__bubble">
+                          {m.role === "assistant" ? (
+                            m.content ? (
+                              <div className="md">
+                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                  {m.content}
+                                </ReactMarkdown>
+                                {streamingThis && <span className="pg-cursor" />}
+                              </div>
+                            ) : (
+                              <span className="pg-msg__bubble--typing">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                              </span>
+                            )
+                          ) : (
+                            m.content
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })
                 )}
               </div>
 

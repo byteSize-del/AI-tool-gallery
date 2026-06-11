@@ -39,12 +39,15 @@ export async function fetchModels(): Promise<ModelsResponse> {
   return res.json();
 }
 
-export async function sendChat(args: {
-  provider: string;
-  model: string;
-  messages: ChatMsg[];
-  accessCode?: string;
-}): Promise<string> {
+export async function streamChat(
+  args: {
+    provider: string;
+    model: string;
+    messages: ChatMsg[];
+    accessCode?: string;
+  },
+  onToken: (token: string) => void
+): Promise<void> {
   const res = await fetch("/api/chat", {
     method: "POST",
     headers: {
@@ -58,13 +61,22 @@ export async function sendChat(args: {
     }),
   });
 
-  const data = await res.json().catch(() => null);
-  if (!res.ok) {
+  // Errors come back as JSON; a successful response is a text token stream.
+  if (!res.ok || !res.body) {
+    const data = await res.json().catch(() => null);
     throw new ChatError(
       data?.error || `Request failed (HTTP ${res.status})`,
       res.status,
       data?.code
     );
   }
-  return data?.content ?? "";
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    const chunk = decoder.decode(value, { stream: true });
+    if (chunk) onToken(chunk);
+  }
 }

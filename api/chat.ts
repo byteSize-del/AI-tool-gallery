@@ -95,7 +95,7 @@ export default async function handler(req: Request): Promise<Response> {
         ? Math.max(0, Math.min(2, body.temperature))
         : 0.7,
     max_tokens: MAX_TOKENS,
-    stream: false,
+    stream: true,
   };
 
   let res: Response;
@@ -109,18 +109,61 @@ export default async function handler(req: Request): Promise<Response> {
     return jsonResponse({ error: "Could not reach the provider." }, 502);
   }
 
-  const data = (await res.json().catch(() => null)) as {
-    choices?: { message?: { content?: string } }[];
-    error?: { message?: string };
-    message?: string;
-  } | null;
-
-  if (!res.ok) {
+  if (!res.ok || !res.body) {
+    const data = (await res.json().catch(() => null)) as {
+      error?: { message?: string };
+      message?: string;
+    } | null;
     const msg =
       data?.error?.message || data?.message || `Provider error (HTTP ${res.status})`;
-    return jsonResponse({ error: msg }, res.status);
+    return jsonResponse({ error: msg }, res.ok ? 502 : res.status);
   }
 
-  const content = data?.choices?.[0]?.message?.content ?? "";
-  return jsonResponse({ content, model });
+  // Transform the provider's OpenAI-style SSE into a plain text token
+  // stream so the browser can render a live "typing" effect.
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  const encoder = new TextEncoder();
+  let buffer = "";
+
+  const stream = new ReadableStream<Uint8Array>({
+    async pull(controller) {
+      const { done, value } = await reader.read();
+      if (done) {
+        controller.close();
+        return;
+      }
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = lines.pop() ?? "";
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed.startsWith("data:")) continue;
+        const data = trimmed.slice(5).trim();
+        if (data === "[DONE]") {
+          controller.close();
+          return;
+        }
+        try {
+          const json = JSON.parse(data) as {
+            choices?: { delta?: { content?: string } }[];
+          };
+          const delta = json.choices?.[0]?.delta?.content;
+          if (delta) controller.enqueue(encoder.encode(delta));
+        } catch {
+          // ignore partial / non-JSON keep-alive lines
+        }
+      }
+    },
+    cancel() {
+      reader.cancel().catch(() => {});
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      "content-type": "text/plain; charset=utf-8",
+      "cache-control": "no-store",
+    },
+  });
 }
