@@ -1,5 +1,5 @@
-﻿/* ===========================================================
-   AI Tools Sketchbook â€” hand-drawn / sketchy theme
+/* ===========================================================
+   AI Tools Sketchbook — hand-drawn / sketchy theme
    =========================================================== */
 
 :root {
@@ -390,7 +390,7 @@ h3 {
 }
 
 .tool-card__visit::after {
-  content: " â†’";
+  content: " →";
 }
 
 /* ---------- Back link ---------- */
@@ -404,7 +404,7 @@ h3 {
 }
 
 .back-link::before {
-  content: "â† ";
+  content: "← ";
 }
 
 /* ---------- Loading screen ---------- */
@@ -664,7 +664,7 @@ h3 {
 }
 
 .check-list li::before {
-  content: "âœï¸";
+  content: "✏️";
   position: absolute;
   left: 0;
   top: 0;
