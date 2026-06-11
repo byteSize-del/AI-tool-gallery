@@ -2,7 +2,11 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
+import { enableDesktopView } from "./utils/desktopView";
 import "./styles/sketch.css";
+
+// Render as the desktop site on all devices (mobile zooms to fit).
+enableDesktopView();
 
 // In development, fail loud if the tool catalogue is malformed so a bad
 // entry surfaces immediately instead of rendering as a broken card.
