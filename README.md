@@ -13,7 +13,6 @@ Built with React + TypeScript + Vite, deployed on Vercel.
 - **Quality tiers** — every tool is ranked (🔥 Top Pick / ⭐ Strong / • Solid) from 2026 popularity and output-quality trends, with the ranking methodology and review date shown in the UI.
 - **Learn section** — short guides on _what AI tools are_ and _what prompting is_, including a colour-coded worked example.
 - **Interactive prompt playground** — toggle the pieces of a prompt (Role, Context, Format, Tone) and watch the assembled prompt, a quality meter, and the answer improve in real time. Runs fully offline.
-- **Live model playground** — chat with real models served through your configured providers (Groq, NVIDIA, Google Gemini, OpenRouter, Mistral), with streaming "typing" responses and Markdown rendering. Models are auto-detected and grouped by use case (chat / code / reasoning / image), including live image generation. Keys stay server-side via Vercel serverless functions.
 - **Compare view** — pin up to three tools head-to-head across maker, pricing, tier, and prompting style.
 - **Live search & filters** — search categories/tools, and filter by Top picks, Strong, Free, or Open Source.
 - **Sketchbook UI** — hand-drawn fonts, wobbly borders, floating doodles, staggered animations, loading screens, and skeleton placeholders (with `prefers-reduced-motion` support).
@@ -105,43 +104,6 @@ Tiers are simple name lists in `src/data/tiers.ts` (anything unlisted defaults t
 ### Demo mode
 
 The loading screens and skeleton placeholders are intentional teaching devices. They're driven by a single `DEMO_MODE` flag in `src/config.ts` — set it to `false` and every artificial delay collapses to 0ms.
-
----
-
-## 🎮 Live Model Playground
-
-The Playground (`/playground`) lets visitors chat with real models. It's powered by Vercel serverless (Edge) functions in `api/` that proxy requests to providers, so **API keys never reach the browser**.
-
-### Setup
-
-Add any of these in **Vercel → Project → Settings → Environment Variables** (you only need one to start). The Playground shows only the providers that have a key:
-
-| Variable             | Provider       |
-| -------------------- | -------------- |
-| `GROQ_API_KEY`       | Groq           |
-| `NVIDIA_API_KEY`     | NVIDIA NIM     |
-| `GOOGLE_API_KEY`     | Google Gemini  |
-| `OPENROUTER_API_KEY` | OpenRouter     |
-| `MISTRAL_API_KEY`    | Mistral        |
-| `PLAYGROUND_ACCESS_CODE` | _(optional)_ require a code before chatting |
-
-Redeploy after adding keys. `/api/models` then auto-detects available models and categorises them into **chat / code / reasoning / image**. See `.env.example`.
-
-> ⚠️ **Cost & abuse warning.** These keys are shared by everyone who visits the deployed site, and there is no per-user authentication. A public Playground can run up real costs. Before sharing the URL widely you should:
-> - set **spend limits / budget alerts** on each provider dashboard,
-> - set `PLAYGROUND_ACCESS_CODE` to gate access (e.g. share the code only with your seminar audience),
-> - consider removing the keys after the event.
-
-> 🧪 **Local development.** Plain `npm run dev` serves the static app but not the `/api` functions. Use `vercel dev` to run the serverless functions locally.
-
-### Image generation
-
-The Image tab generates images live. Support per provider:
-
-- **Google** — Imagen via the OpenAI-compatible `/images/generations` endpoint.
-- **OpenRouter** — models with image output (image modality on chat completions).
-- **NVIDIA** — FLUX / SDXL families via the NVIDIA genai endpoint (best-effort).
-- **Groq / Mistral** — no image API; those models won't appear under Image.
 
 ---
 

@@ -27,12 +27,6 @@ export default function Navbar() {
           Compare
         </NavLink>
         <NavLink
-          to="/playground"
-          className={({ isActive }) => "nav-link" + (isActive ? " active" : "")}
-        >
-          Playground
-        </NavLink>
-        <NavLink
           to="/about"
           className={({ isActive }) => "nav-link" + (isActive ? " active" : "")}
         >
