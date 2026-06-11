@@ -17,6 +17,7 @@ const LearnAITools = lazy(() => import("./pages/LearnAITools"));
 const LearnPrompting = lazy(() => import("./pages/LearnPrompting"));
 const Compare = lazy(() => import("./pages/Compare"));
 // ^ comparison view route
+const Playground = lazy(() => import("./pages/Playground"));
 
 /** Friendly messages for the per-page loading screen. */
 const loadingMessages: Record<string, string> = {
@@ -27,6 +28,7 @@ const loadingMessages: Record<string, string> = {
   "/learn/ai-tools": "Explaining the magic",
   "/learn/prompting": "Lining up the words",
   "/compare": "Lining up the contenders",
+  "/playground": "Booting up the models",
 };
 
 function loadingMessageFor(path: string): string {
@@ -97,6 +99,10 @@ export default function App() {
         <Route
           path="/compare"
           element={page(<Compare />, "Lining up the contenders")}
+        />
+        <Route
+          path="/playground"
+          element={page(<Playground />, "Booting up the models")}
         />
         <Route path="/about" element={page(<About />, "Flipping the page")} />
         <Route path="*" element={<Navigate to="/" replace />} />

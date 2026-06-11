@@ -1604,3 +1604,214 @@ h3 {
   line-height: 1.6;
   margin: 0 0 0.5rem !important;
 }
+
+/* ===========================================================
+   Model Playground
+   =========================================================== */
+
+.pg-providers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.2rem;
+}
+
+.pg-providers__total {
+  font-family: var(--font-alt);
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+}
+
+.pg-count {
+  font-family: var(--font-alt);
+  font-size: 0.7rem;
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 8px 3px 9px 3px / 3px 9px 3px 8px;
+  padding: 0.05em 0.4em;
+  margin-left: 0.2rem;
+}
+
+.pg-controls {
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.2rem;
+}
+
+.pg-select,
+.pg-search {
+  font-family: var(--font-hand);
+  font-size: 1rem;
+  color: var(--ink);
+  background: var(--paper);
+  border: 2.5px solid var(--ink);
+  border-radius: var(--sketch-radius);
+  box-shadow: 3px 4px 0 var(--shadow);
+  padding: 0.5rem 0.8rem;
+}
+
+.pg-select {
+  flex: 2;
+  min-width: 220px;
+  cursor: pointer;
+}
+
+.pg-search {
+  flex: 1;
+  min-width: 140px;
+}
+
+.pg-select:focus,
+.pg-search:focus {
+  outline: none;
+  rotate: -0.4deg;
+}
+
+/* chat surface */
+.pg-chat {
+  padding: 1rem 1.1rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.pg-chat__messages {
+  min-height: 280px;
+  max-height: 52vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding: 0.4rem 0.2rem 0.8rem;
+}
+
+.pg-chat__empty {
+  margin: auto 0;
+  text-align: center;
+}
+
+.pg-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 0.6rem;
+}
+
+.pg-msg {
+  display: flex;
+  flex-direction: column;
+  max-width: 85%;
+}
+
+.pg-msg--user {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.pg-msg--assistant {
+  align-self: flex-start;
+}
+
+.pg-msg__who {
+  font-family: var(--font-alt);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--ink-soft);
+  margin-bottom: 0.2rem;
+}
+
+.pg-msg__bubble {
+  font-family: var(--font-hand);
+  font-size: 1.02rem;
+  line-height: 1.55;
+  border: 2.5px solid var(--ink);
+  padding: 0.6rem 0.9rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  box-shadow: 3px 4px 0 var(--shadow);
+}
+
+.pg-msg--user .pg-msg__bubble {
+  background: var(--accent-3);
+  border-radius: var(--sketch-radius);
+}
+
+.pg-msg--assistant .pg-msg__bubble {
+  background: var(--paper-2);
+  border-radius: var(--sketch-radius-2);
+}
+
+.pg-msg__bubble--typing {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.pg-msg__bubble--typing span {
+  width: 8px;
+  height: 8px;
+  background: var(--ink);
+  border-radius: 50%;
+  animation: blink 1.4s infinite;
+}
+.pg-msg__bubble--typing span:nth-child(2) { animation-delay: 0.2s; }
+.pg-msg__bubble--typing span:nth-child(3) { animation-delay: 0.4s; }
+
+.pg-error {
+  background: #f6e7e3;
+  border: 2px dashed var(--accent);
+  border-radius: var(--sketch-radius);
+  padding: 0.6rem 0.9rem;
+  margin: 0.4rem 0;
+  font-size: 0.95rem;
+}
+
+.pg-access {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin: 0.4rem 0;
+}
+
+.pg-composer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  border-top: 2px dashed rgba(43, 43, 43, 0.3);
+  padding-top: 0.8rem;
+}
+
+.pg-input {
+  font-family: var(--font-hand);
+  font-size: 1.05rem;
+  color: var(--ink);
+  background: var(--paper);
+  border: 2.5px solid var(--ink);
+  border-radius: var(--sketch-radius);
+  padding: 0.6rem 0.9rem;
+  resize: vertical;
+}
+
+.pg-input:focus {
+  outline: none;
+}
+
+.pg-input:disabled {
+  opacity: 0.6;
+}
+
+.pg-composer__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+}
+
+.pg-disclaimer {
+  text-align: center;
+  font-size: 0.8rem;
+  margin-top: 1rem;
+}
