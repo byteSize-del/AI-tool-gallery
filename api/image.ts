@@ -67,18 +67,7 @@ export default async function handler(req: Request): Promise<Response> {
     }
 
     if (provider.id === "google") {
-      const res = await fetch(`${provider.baseUrl}/images/generations`, {
-        method: "POST",
-        headers: authHeaders(provider, key),
-        body: JSON.stringify({ model, prompt, n: 1, size, response_format: "b64_json" }),
-      });
-      const data = await readJson(res);
-      if (!res.ok) return providerError(data, res.status);
-      const b64 = data?.data?.[0]?.b64_json;
-      const url = data?.data?.[0]?.url;
-      if (b64) return jsonResponse({ image: `data:image/png;base64,${b64}` });
-      if (url) return jsonResponse({ image: url });
-      return jsonResponse({ error: "No image returned." }, 502);
+      return await googleImage(provider.baseUrl, model, prompt, key, size);
     }
 
     if (provider.id === "nvidia") {
@@ -92,6 +81,63 @@ export default async function handler(req: Request): Promise<Response> {
   } catch {
     return jsonResponse({ error: "Could not reach the provider." }, 502);
   }
+}
+
+/**
+ * Google has two image-capable families with different APIs:
+ *   - Imagen models       -> OpenAI-compatible /images/generations ("predict")
+ *   - Gemini *-image models -> native generateContent with an IMAGE modality
+ */
+async function googleImage(
+  openaiBase: string,
+  model: string,
+  prompt: string,
+  key: string,
+  size: string
+): Promise<Response> {
+  const isImagen = /imagen/i.test(model);
+
+  if (isImagen) {
+    const res = await fetch(`${openaiBase}/images/generations`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${key}`, "content-type": "application/json" },
+      body: JSON.stringify({ model, prompt, n: 1, size, response_format: "b64_json" }),
+    });
+    const data = await readJson(res);
+    if (!res.ok) return providerError(data, res.status);
+    const b64 = data?.data?.[0]?.b64_json;
+    const url = data?.data?.[0]?.url;
+    if (b64) return jsonResponse({ image: `data:image/png;base64,${b64}` });
+    if (url) return jsonResponse({ image: url });
+    return jsonResponse({ error: "No image returned." }, 502);
+  }
+
+  // Gemini image models: native endpoint, e.g. v1beta/models/<model>:generateContent
+  const nativeBase = openaiBase.replace(/\/openai\/?$/, "");
+  const cleanModel = model.replace(/^models\//, "");
+  const res = await fetch(`${nativeBase}/models/${cleanModel}:generateContent`, {
+    method: "POST",
+    headers: { "content-type": "application/json", "x-goog-api-key": key },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: { responseModalities: ["TEXT", "IMAGE"] },
+    }),
+  });
+  const data = await readJson(res);
+  if (!res.ok) return providerError(data, res.status);
+
+  const parts: any[] = data?.candidates?.[0]?.content?.parts ?? [];
+  const inline = parts
+    .map((p) => p?.inlineData || p?.inline_data)
+    .find((d) => d?.data);
+  if (inline?.data) {
+    const mime = inline.mimeType || inline.mime_type || "image/png";
+    return jsonResponse({ image: `data:${mime};base64,${inline.data}` });
+  }
+  return jsonResponse(
+    { error: "Gemini didn't return an image. Try an Imagen model or rephrase the prompt." },
+    502
+  );
 }
 
 /** NVIDIA hosts image models on a separate genai host with model-specific bodies. */
