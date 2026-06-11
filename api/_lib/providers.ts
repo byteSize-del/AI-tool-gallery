@@ -79,6 +79,22 @@ export function providerById(id: string): ProviderDef | undefined {
   return PROVIDERS.find((p) => p.id === id);
 }
 
+/**
+ * Validate a user-supplied model id before it is interpolated into a
+ * provider URL path. Prevents path traversal / request smuggling while
+ * allowing the slashes and dots real model ids use (e.g.
+ * "black-forest-labs/flux.1-dev", "models/gemini-2.5-flash-image").
+ */
+export function isValidModelId(id: string): boolean {
+  return (
+    typeof id === "string" &&
+    id.length > 0 &&
+    id.length <= 128 &&
+    /^[A-Za-z0-9._/:-]+$/.test(id) &&
+    !id.includes("..")
+  );
+}
+
 export function authHeaders(p: ProviderDef, key: string): Record<string, string> {
   return {
     Authorization: `Bearer ${key}`,

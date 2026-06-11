@@ -6,7 +6,7 @@
 //   - NVIDIA  : genai endpoint (FLUX / SDXL families), best-effort
 //   - Groq / Mistral: not supported (no image API)
 
-import { providerById, getKey, authHeaders, jsonResponse } from "./_lib/providers";
+import { providerById, getKey, authHeaders, isValidModelId, jsonResponse } from "./_lib/providers";
 
 declare const process: { env: Record<string, string | undefined> };
 
@@ -40,6 +40,7 @@ export default async function handler(req: Request): Promise<Response> {
   const model = String(body.model || "");
   const prompt = String(body.prompt || "").trim();
   if (!model || !prompt) return jsonResponse({ error: "model and prompt are required" }, 400);
+  if (!isValidModelId(model)) return jsonResponse({ error: "Invalid model id" }, 400);
   if (prompt.length > MAX_PROMPT)
     return jsonResponse({ error: "Prompt is too long for this demo." }, 413);
   const size = typeof body.size === "string" ? body.size : "1024x1024";

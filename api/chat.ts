@@ -8,6 +8,7 @@ import {
   getKey,
   authHeaders,
   categorize,
+  isValidModelId,
   jsonResponse,
 } from "./_lib/providers";
 
@@ -62,6 +63,7 @@ export default async function handler(req: Request): Promise<Response> {
   if (!model || !Array.isArray(messages) || messages.length === 0) {
     return jsonResponse({ error: "model and messages are required" }, 400);
   }
+  if (!isValidModelId(model)) return jsonResponse({ error: "Invalid model id" }, 400);
 
   const totalChars = messages.reduce(
     (n, m) => n + String(m?.content || "").length,
