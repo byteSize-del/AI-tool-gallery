@@ -63,8 +63,8 @@ export default function LearnAITools() {
         </div>
 
         <div style={{ marginTop: "1.4rem" }}>
-          <Link to="/learn/prompting" className="sketch-btn">
-            Next: What is prompting? →
+          <Link to="/learn/how-models-work" className="sketch-btn">
+            Next: How models work →
           </Link>
         </div>
       </article>

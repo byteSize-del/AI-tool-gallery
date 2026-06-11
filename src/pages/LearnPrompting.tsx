@@ -158,8 +158,8 @@ export default function LearnPrompting() {
         </p>
 
         <div style={{ marginTop: "1.4rem" }}>
-          <Link to="/home" className="sketch-btn">
-            Browse the tools →
+          <Link to="/learn/prompting-patterns" className="sketch-btn">
+            Next: Prompting patterns →
           </Link>
         </div>
       </article>

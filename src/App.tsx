@@ -15,6 +15,12 @@ const About = lazy(() => import("./pages/About"));
 const Learn = lazy(() => import("./pages/Learn"));
 const LearnAITools = lazy(() => import("./pages/LearnAITools"));
 const LearnPrompting = lazy(() => import("./pages/LearnPrompting"));
+const LearnHowModelsWork = lazy(() => import("./pages/LearnHowModelsWork"));
+const LearnPromptingPatterns = lazy(() => import("./pages/LearnPromptingPatterns"));
+const LearnLimitations = lazy(() => import("./pages/LearnLimitations"));
+const LearnEthicsPrivacy = lazy(() => import("./pages/LearnEthicsPrivacy"));
+const LearnChoosingTools = lazy(() => import("./pages/LearnChoosingTools"));
+const LearnStayingCurrent = lazy(() => import("./pages/LearnStayingCurrent"));
 const Compare = lazy(() => import("./pages/Compare"));
 
 /** Friendly messages for the per-page loading screen. */
@@ -25,6 +31,12 @@ const loadingMessages: Record<string, string> = {
   "/learn": "Sharpening the basics",
   "/learn/ai-tools": "Explaining the magic",
   "/learn/prompting": "Lining up the words",
+  "/learn/how-models-work": "Counting the tokens",
+  "/learn/prompting-patterns": "Mixing the patterns",
+  "/learn/limitations": "Fact-checking the robot",
+  "/learn/ethics-privacy": "Weighing the ethics",
+  "/learn/choosing-tools": "Sizing up the options",
+  "/learn/staying-current": "Chasing the frontier",
   "/compare": "Lining up the contenders",
 };
 
@@ -92,6 +104,30 @@ export default function App() {
         <Route
           path="/learn/prompting"
           element={page(<LearnPrompting />, "Lining up the words")}
+        />
+        <Route
+          path="/learn/how-models-work"
+          element={page(<LearnHowModelsWork />, "Counting the tokens")}
+        />
+        <Route
+          path="/learn/prompting-patterns"
+          element={page(<LearnPromptingPatterns />, "Mixing the patterns")}
+        />
+        <Route
+          path="/learn/limitations"
+          element={page(<LearnLimitations />, "Fact-checking the robot")}
+        />
+        <Route
+          path="/learn/ethics-privacy"
+          element={page(<LearnEthicsPrivacy />, "Weighing the ethics")}
+        />
+        <Route
+          path="/learn/choosing-tools"
+          element={page(<LearnChoosingTools />, "Sizing up the options")}
+        />
+        <Route
+          path="/learn/staying-current"
+          element={page(<LearnStayingCurrent />, "Chasing the frontier")}
         />
         <Route
           path="/compare"

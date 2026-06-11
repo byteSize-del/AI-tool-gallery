@@ -8,24 +8,64 @@ const topics = [
     icon: "🧠",
     step: "01",
     title: "What are AI tools?",
-    text: "Understand what AI tools actually are and how they work under the hood.",
+    text: "What AI tools are and how the models behind them work.",
     accent: "var(--accent-2)",
+  },
+  {
+    to: "/learn/how-models-work",
+    icon: "⚙️",
+    step: "02",
+    title: "How models work",
+    text: "Tokens, context windows, and why prompt length matters.",
+    accent: "var(--accent-4)",
   },
   {
     to: "/learn/prompting",
     icon: "💬",
-    step: "02",
+    step: "03",
     title: "What is prompting?",
-    text: "Learn how prompting works and how to talk to AI so it gives you what you want.",
+    text: "How to talk to AI so it gives you what you want, with a live playground.",
     accent: "var(--accent)",
   },
   {
-    to: "/home",
-    icon: "🗂️",
-    step: "03",
-    title: "How categories work",
-    text: "See how we sort 250+ tools into 12 shelves so you find the right one fast.",
+    to: "/learn/prompting-patterns",
+    icon: "✨",
+    step: "04",
+    title: "Prompting patterns",
+    text: "Few-shot, chain-of-thought, roles, and iterating like a pro.",
+    accent: "var(--accent-3)",
+  },
+  {
+    to: "/learn/limitations",
+    icon: "🧐",
+    step: "05",
+    title: "Limitations & verification",
+    text: "Why AI can be confidently wrong, and how to check its work.",
+    accent: "var(--accent-2)",
+  },
+  {
+    to: "/learn/ethics-privacy",
+    icon: "⚖️",
+    step: "06",
+    title: "Ethics, privacy & copyright",
+    text: "Using AI responsibly: data safety, bias, ownership and honesty.",
+    accent: "var(--accent)",
+  },
+  {
+    to: "/learn/choosing-tools",
+    icon: "🧭",
+    step: "07",
+    title: "Choosing the right tool",
+    text: "A simple framework for picking the best fit for any task.",
     accent: "var(--accent-4)",
+  },
+  {
+    to: "/learn/staying-current",
+    icon: "🌱",
+    step: "08",
+    title: "Staying current",
+    text: "How to evaluate brand-new tools yourself as the field moves.",
+    accent: "var(--accent-3)",
   },
 ];
 
@@ -37,7 +77,7 @@ export default function Learn() {
     <div>
       <header className="section-head fade-up">
         <h1>Learn the Basics 📚</h1>
-        <p>New to AI tools? Follow these three short reads, then dive in.</p>
+        <p>New to AI? Follow this 8-step track in order, or jump to any topic.</p>
       </header>
 
       {ready ? (
@@ -46,7 +86,7 @@ export default function Learn() {
             <div
               key={t.to}
               className="sketch-box learn-card pop-in"
-              style={{ animationDelay: `${i * 90}ms` }}
+              style={{ animationDelay: `${i * 70}ms` }}
               role="button"
               tabIndex={0}
               onClick={() => navigate(t.to)}
@@ -71,7 +111,7 @@ export default function Learn() {
           ))}
         </div>
       ) : (
-        <SkeletonGrid count={3} variant="category" />
+        <SkeletonGrid count={8} variant="category" />
       )}
 
       <div style={{ textAlign: "center", marginTop: "2.5rem" }}>
