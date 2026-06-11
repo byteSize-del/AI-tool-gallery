@@ -80,3 +80,34 @@ export async function streamChat(
     if (chunk) onToken(chunk);
   }
 }
+
+export async function generateImage(args: {
+  provider: string;
+  model: string;
+  prompt: string;
+  accessCode?: string;
+}): Promise<string> {
+  const res = await fetch("/api/image", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      ...(args.accessCode ? { "x-access-code": args.accessCode } : {}),
+    },
+    body: JSON.stringify({
+      provider: args.provider,
+      model: args.model,
+      prompt: args.prompt,
+    }),
+  });
+
+  const data = await res.json().catch(() => null);
+  if (!res.ok) {
+    throw new ChatError(
+      data?.error || `Request failed (HTTP ${res.status})`,
+      res.status,
+      data?.code
+    );
+  }
+  if (!data?.image) throw new ChatError("No image was returned.", 502);
+  return data.image as string;
+}

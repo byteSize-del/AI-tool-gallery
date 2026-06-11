@@ -1954,3 +1954,47 @@ h3 {
     animation: none;
   }
 }
+
+/* ===========================================================
+   Playground image studio
+   =========================================================== */
+
+.pg-image {
+  padding: 1.1rem 1.2rem 1.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.pg-image__hint {
+  margin: 0 !important;
+  font-size: 0.9rem !important;
+}
+
+.pg-image__loading {
+  width: 100%;
+  max-width: 420px;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--sketch-radius);
+  margin: 0.4rem auto 0;
+}
+
+.pg-image__result {
+  margin: 0.4rem auto 0;
+  max-width: 460px;
+  text-align: center;
+}
+
+.pg-image__result img {
+  width: 100%;
+  height: auto;
+  border: 3px solid var(--ink);
+  border-radius: var(--sketch-radius);
+  box-shadow: 5px 6px 0 var(--shadow);
+  rotate: -1deg;
+  background: var(--paper-2);
+}
+
+.pg-image__result figcaption {
+  margin-top: 0.6rem;
+}

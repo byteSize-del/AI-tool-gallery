@@ -4,6 +4,7 @@ import remarkGfm from "remark-gfm";
 import {
   fetchModels,
   streamChat,
+  generateImage,
   ChatError,
   type ApiProvider,
   type Capability,
@@ -29,7 +30,10 @@ const SUGGESTIONS: Record<Capability, string[]> = {
     "A bat and ball cost $1.10. The bat costs $1 more than the ball. How much is the ball?",
     "Plan a 3-step approach to learn guitar in a month.",
   ],
-  image: [],
+  image: [
+    "a cozy cabin in a snowy pine forest, soft watercolor",
+    "a friendly robot reading a book, flat vector illustration",
+  ],
   audio: [],
 };
 
@@ -62,6 +66,12 @@ export default function Playground() {
     () => localStorage.getItem(ACCESS_KEY) ?? ""
   );
   const [accessNeeded, setAccessNeeded] = useState(false);
+
+  // image generation state
+  const [imgPrompt, setImgPrompt] = useState("");
+  const [imgUrl, setImgUrl] = useState<string | null>(null);
+  const [imgLoading, setImgLoading] = useState(false);
+  const [imgError, setImgError] = useState<string | null>(null);
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -192,6 +202,32 @@ export default function Playground() {
     setChatError(null);
   }
 
+  async function handleGenerateImage(text: string) {
+    if (!selected || !text.trim() || imgLoading) return;
+    setImgError(null);
+    setImgLoading(true);
+    setImgUrl(null);
+    try {
+      const url = await generateImage({
+        provider: selected.providerId,
+        model: selected.id,
+        prompt: text.trim(),
+        accessCode: accessCode || undefined,
+      });
+      setImgUrl(url);
+      setAccessNeeded(false);
+    } catch (e) {
+      if (e instanceof ChatError && e.code === "ACCESS_REQUIRED") {
+        setAccessNeeded(true);
+        setImgError("This playground is protected. Enter the access code to continue.");
+      } else {
+        setImgError(e instanceof Error ? e.message : "Something went wrong.");
+      }
+    } finally {
+      setImgLoading(false);
+    }
+  }
+
   if (!ready) return <SkeletonGrid count={3} variant="tool" />;
 
   return (
@@ -285,16 +321,94 @@ export default function Playground() {
 
           {/* chat surface */}
           {tab === "image" ? (
-            <div className="empty-state sketch-box" style={{ marginTop: "1.4rem" }}>
-              <span className="empty-state__emoji">🎨</span>
-              <h2>Image models detected</h2>
-              <p>
-                We found {tabModels.length} image model
-                {tabModels.length === 1 ? "" : "s"} on your providers. Live image
-                generation uses a different endpoint per provider and isn&apos;t
-                wired into this chat demo yet, so for now these are listed for
-                reference. The chat, code and reasoning tabs are fully live.
+            <div className="pg-image sketch-box">
+              <p className="muted pg-image__hint">
+                Generating with <strong>{selected?.id ?? "a model"}</strong> via{" "}
+                <strong>{selected?.providerLabel ?? "—"}</strong>. Image
+                generation works on Google (Imagen), OpenRouter image models,
+                and NVIDIA FLUX/SDXL.
               </p>
+
+              <form
+                className="pg-composer"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleGenerateImage(imgPrompt);
+                }}
+              >
+                <textarea
+                  className="pg-input"
+                  placeholder="Describe the image you want… (e.g. a red panda astronaut, watercolor)"
+                  value={imgPrompt}
+                  rows={2}
+                  disabled={!selected || imgLoading}
+                  onChange={(e) => setImgPrompt(e.target.value)}
+                />
+                <div className="pg-composer__actions">
+                  <button
+                    type="submit"
+                    className="sketch-btn"
+                    disabled={!selected || imgLoading || !imgPrompt.trim()}
+                  >
+                    {imgLoading ? "Painting…" : "Generate 🎨"}
+                  </button>
+                </div>
+              </form>
+
+              {!imgUrl && !imgLoading && (
+                <div className="pg-suggestions" style={{ justifyContent: "flex-start" }}>
+                  {SUGGESTIONS.image.map((s) => (
+                    <button
+                      key={s}
+                      className="chip"
+                      onClick={() => {
+                        setImgPrompt(s);
+                        handleGenerateImage(s);
+                      }}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {imgError && <div className="pg-error">⚠️ {imgError}</div>}
+
+              {accessNeeded && (
+                <div className="pg-access">
+                  <input
+                    type="password"
+                    className="pg-search"
+                    placeholder="Access code"
+                    defaultValue={accessCode}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter")
+                        saveAccessCode((e.target as HTMLInputElement).value);
+                    }}
+                    aria-label="Access code"
+                  />
+                  <span className="muted">Press Enter to save and retry.</span>
+                </div>
+              )}
+
+              {imgLoading && (
+                <div className="pg-image__loading skeleton" aria-label="Generating image" />
+              )}
+
+              {imgUrl && !imgLoading && (
+                <figure className="pg-image__result">
+                  <img src={imgUrl} alt={imgPrompt || "Generated image"} />
+                  <figcaption>
+                    <a
+                      href={imgUrl}
+                      download="ai-image.png"
+                      className="tool-card__ext"
+                    >
+                      Download ↓
+                    </a>
+                  </figcaption>
+                </figure>
+              )}
             </div>
           ) : (
             <div className="pg-chat sketch-box">
