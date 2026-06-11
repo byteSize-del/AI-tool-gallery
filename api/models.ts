@@ -26,6 +26,14 @@ export default async function handler(): Promise<Response> {
       if (!key) {
         return { id: p.id, label: p.label, connected: false, models: [] };
       }
+
+      // Models we support that the /models endpoint won't list.
+      const extra = (p.extraModels ?? []).map((id) => ({
+        id,
+        label: id,
+        capabilities: categorize(id),
+      }));
+
       try {
         const res = await fetch(`${p.baseUrl}/models`, {
           headers: authHeaders(p, key),
@@ -35,13 +43,13 @@ export default async function handler(): Promise<Response> {
             id: p.id,
             label: p.label,
             connected: true,
-            models: [],
+            models: extra,
             error: `HTTP ${res.status}`,
           };
         }
         const json = (await res.json()) as { data?: RawModel[] };
         const list = Array.isArray(json?.data) ? json.data : [];
-        const models = list
+        const detected = list
           .map((m) => {
             const mid = m.id || m.name || "";
             return {
@@ -52,13 +60,18 @@ export default async function handler(): Promise<Response> {
           })
           .filter((m) => m.id)
           .slice(0, MAX_PER_PROVIDER);
+
+        // merge curated extras, de-duping by id
+        const seen = new Set(detected.map((m) => m.id));
+        const models = [...detected, ...extra.filter((m) => !seen.has(m.id))];
+
         return { id: p.id, label: p.label, connected: true, models };
       } catch {
         return {
           id: p.id,
           label: p.label,
           connected: true,
-          models: [],
+          models: extra,
           error: "Could not reach provider",
         };
       }

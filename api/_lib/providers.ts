@@ -16,6 +16,12 @@ export interface ProviderDef {
   /** OpenAI-compatible base URL (all five providers support this shape). */
   baseUrl: string;
   extraHeaders?: Record<string, string>;
+  /**
+   * Models the provider's /models endpoint does NOT list but that we
+   * still support. NVIDIA image models, for example, live on a separate
+   * genai host and never appear in the OpenAI-compatible model list.
+   */
+  extraModels?: string[];
 }
 
 export const PROVIDERS: ProviderDef[] = [
@@ -30,6 +36,15 @@ export const PROVIDERS: ProviderDef[] = [
     label: "NVIDIA",
     envKey: "NVIDIA_API_KEY",
     baseUrl: "https://integrate.api.nvidia.com/v1",
+    // Image models on NVIDIA use a separate genai host and aren't in /models.
+    extraModels: [
+      "black-forest-labs/flux.1-dev",
+      "black-forest-labs/flux.1-schnell",
+      "stabilityai/stable-diffusion-3-medium",
+      "stabilityai/stable-diffusion-3.5-large",
+      "stabilityai/stable-diffusion-xl",
+      "stabilityai/sdxl-turbo",
+    ],
   },
   {
     id: "google",
