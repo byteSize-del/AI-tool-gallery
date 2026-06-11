@@ -68,6 +68,7 @@ const strong: string[] = [
   "Playground AI",
   "Civitai",
   "DALL·E 3",
+  "Google Imagen",
   // Coding
   "Codeium / Windsurf",
   "Kiro",

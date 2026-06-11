@@ -32,7 +32,12 @@ export const categories: Category[] = [
       { name: "Artbreeder", description: "Blend and evolve images collaboratively.", url: "https://www.artbreeder.com", pricing: "Freemium" },
       { name: "Freepik AI", description: "Stock-style asset and image generation.", url: "https://www.freepik.com/ai", pricing: "Freemium" },
       { name: "Civitai", description: "Hub of community Stable Diffusion models and LoRAs.", url: "https://civitai.com", pricing: "Free" },
-      { name: "Getimg.ai", description: "All-in-one toolkit for generating and editing images.", url: "https://getimg.ai", pricing: "Freemium" }
+      { name: "Getimg.ai", description: "All-in-one toolkit for generating and editing images.", url: "https://getimg.ai", pricing: "Freemium" },
+      { name: "Google Imagen", description: "Google's photorealistic text-to-image model, built into Gemini.", url: "https://deepmind.google/technologies/imagen", pricing: "Freemium" },
+      { name: "Amazon Titan Image Generator", description: "Image generation in Amazon Bedrock for enterprise and e-commerce.", url: "https://aws.amazon.com/bedrock/titan", pricing: "Paid" },
+      { name: "NVIDIA Picasso", description: "Foundry for building and serving image and video generation models.", url: "https://www.nvidia.com/en-us/gpu-cloud/picasso", pricing: "Paid" },
+      { name: "Alibaba Tongyi Wanxiang", description: "Alibaba Cloud's scalable text-to-image model, popular in China.", url: "https://tongyi.aliyun.com/wanxiang", pricing: "Freemium" },
+      { name: "Baidu ERNIE-ViLG", description: "Baidu's text-to-image model integrated across its China platforms.", url: "https://wenxin.baidu.com", pricing: "Freemium" }
     ]
   },
   {
