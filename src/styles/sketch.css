@@ -31,6 +31,7 @@ html,
 body {
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
 }
 
 body {
@@ -43,6 +44,14 @@ body {
     linear-gradient(90deg, rgba(79, 157, 222, 0.07) 1px, transparent 1px);
   background-size: 28px 28px;
   -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* media never overflows its container on small screens */
+img,
+video {
+  max-width: 100%;
+  height: auto;
 }
 
 a {
@@ -121,6 +130,7 @@ h3 {
 
 .app-shell {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
 }
@@ -218,6 +228,7 @@ h3 {
 
 .welcome {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -293,7 +304,7 @@ h3 {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(250px, 100%), 1fr));
   gap: 1.6rem;
 }
 
@@ -343,7 +354,7 @@ h3 {
 
 .tool-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
   gap: 1.5rem;
 }
 
@@ -1028,7 +1039,7 @@ h3 {
 
 .learn-track {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
   gap: 1.6rem;
 }
 
@@ -1115,7 +1126,7 @@ h3 {
 
 .cat-chip-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(180px, 100%), 1fr));
   gap: 0.7rem;
 }
 
@@ -1395,7 +1406,7 @@ h3 {
 .compare-grid {
   display: grid;
   gap: 1.3rem;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
 }
 
 .compare-col {
@@ -1603,4 +1614,154 @@ h3 {
   font-size: 1rem !important;
   line-height: 1.6;
   margin: 0 0 0.5rem !important;
+}
+
+/* ===========================================================
+   Responsive: adapt the layout to tablets and phones
+   =========================================================== */
+
+/* Tablets and small laptops */
+@media (max-width: 768px) {
+  .page-wrap {
+    padding: 1.5rem 1rem 2.5rem;
+  }
+  .navbar {
+    padding: 0.9rem 1rem;
+  }
+  .prose {
+    padding: 1.4rem 1.2rem;
+  }
+  .info-section {
+    padding: 1.1rem 1.1rem;
+  }
+  .tool-hero {
+    padding: 1.3rem 1.2rem;
+  }
+  .section-head {
+    margin-bottom: 1.6rem;
+  }
+}
+
+/* Phones */
+@media (max-width: 560px) {
+  .navbar {
+    gap: 0.6rem;
+    padding: 0.8rem 0.9rem;
+  }
+  .navbar__brand {
+    font-size: 1.25rem;
+  }
+  .navbar__links {
+    width: 100%;
+    gap: 0.4rem;
+  }
+  .nav-link {
+    font-size: 0.95rem;
+    padding: 0.2em 0.6em;
+  }
+
+  .page-wrap {
+    padding: 1.25rem 0.9rem 2.5rem;
+  }
+
+  .section-head p,
+  .ranking-info {
+    font-size: 1rem;
+  }
+
+  .grid,
+  .tool-grid,
+  .learn-track,
+  .compare-grid {
+    gap: 1.1rem;
+  }
+
+  /* calmer hover so a tapped card doesn't stay shifted on touch screens */
+  .cat-card:hover,
+  .tool-card:hover,
+  .learn-card:hover {
+    transform: none;
+    rotate: 0deg;
+    box-shadow: 5px 6px 0 var(--shadow);
+  }
+
+  /* stats: tighter, wrap nicely */
+  .welcome__stats,
+  .home-stats {
+    gap: 0.6rem;
+  }
+  .stat-tile {
+    min-width: 84px;
+    padding: 0.55rem 0.9rem;
+  }
+  .stat-tile__value {
+    font-size: 1.6rem;
+  }
+
+  /* full-width primary actions are easier to tap */
+  .welcome__cta-row {
+    flex-direction: column;
+    width: 100%;
+  }
+  .welcome__cta-row .sketch-btn {
+    width: 100%;
+  }
+
+  .search-bar {
+    padding: 0.4rem 0.7rem;
+  }
+
+  .prose {
+    padding: 1.2rem 1rem;
+  }
+  .prose h2 {
+    font-size: 1.35rem;
+  }
+  .prose p {
+    font-size: 1rem;
+  }
+
+  .info-section {
+    padding: 1rem 1rem;
+  }
+  .info-section__title {
+    font-size: 1.3rem;
+  }
+
+  .check-list li,
+  .step-list li {
+    font-size: 1rem;
+  }
+
+  /* keep the compare "remove" button inside the card on small screens */
+  .compare-col__remove {
+    top: 6px;
+    right: 6px;
+  }
+
+  /* playground recipe toggles wrap comfortably */
+  .playground {
+    padding: 1.1rem 1rem;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 380px) {
+  .navbar__brand {
+    font-size: 1.1rem;
+  }
+  .nav-link {
+    font-size: 0.85rem;
+    padding: 0.18em 0.5em;
+  }
+  .welcome__card {
+    padding: 1.6rem 1.1rem;
+  }
+  .cat-card,
+  .tool-card {
+    padding: 1rem 1rem;
+  }
+  .section-head h1 {
+    font-size: 1.85rem;
+  }
 }
